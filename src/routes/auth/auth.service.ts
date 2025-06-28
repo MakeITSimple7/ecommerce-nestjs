@@ -12,6 +12,7 @@ import envConfig from 'src/shared/config'
 import { SendOTPBodyType } from './auth.model'
 import { addMilliseconds } from 'date-fns'
 import { TypeOfVerificationCode } from 'src/shared/constants/auth.constant'
+import { EmailService } from 'src/shared/services/email.service'
 
 @Injectable()
 export class AuthService {
@@ -22,6 +23,7 @@ export class AuthService {
     private readonly rolesService: RolesService,
     private readonly authRepository: AuthRepository,
     private readonly sharedUserRepository: SharedUserRepository,
+    private readonly emailService: EmailService, // Assuming you have an EmailService for sending emails
   ) {}
   async register(body: RegisterBodyDTO) {
     try {
@@ -172,13 +174,27 @@ export class AuthService {
       ])
     }
     // 2. Tạo mã OTP
+    const code = generateOTP()
     const verificationCode = this.authRepository.createVerificationCode({
       email: body.email,
-      code: generateOTP(),
+      code: code,
       type: body.type,
       expiresAt: addMilliseconds(new Date(), ms(envConfig.OTP_EXPIRES_IN)),
     })
     // 3. Gửi mã OTP
+    const { error } = await this.emailService.sendOTP({
+      email: body.email,
+      code,
+    })
+
+    if (error) {
+      throw new UnprocessableEntityException([
+        {
+          message: 'Send OTP code failed',
+          path: 'code',
+        },
+      ])
+    }
     return verificationCode
   }
 }
