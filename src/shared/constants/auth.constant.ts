@@ -1,3 +1,5 @@
+import { randomInt } from 'crypto'
+
 export const REQUEST_USER_KEY = 'user'
 
 export const AuthType = {
@@ -20,3 +22,12 @@ export const UserStatus = {
   INACTIVE: 'INACTIVE',
   BLOCKED: 'BLOCKED',
 } as const
+
+export const TypeOfVerificationCode = {
+  REGISTER: 'REGISTER',
+  FORGOT_PASSWORD: 'FORGOT_PASSWORD',
+} as const
+
+export const generateOTP = () => {
+  return String(randomInt(100000, 1000000))
+}
