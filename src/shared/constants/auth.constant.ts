@@ -1,5 +1,3 @@
-import { randomInt } from 'crypto'
-
 export const REQUEST_USER_KEY = 'user'
 
 export const AuthType = {
@@ -28,6 +26,4 @@ export const TypeOfVerificationCode = {
   FORGOT_PASSWORD: 'FORGOT_PASSWORD',
 } as const
 
-export const generateOTP = () => {
-  return String(randomInt(100000, 1000000))
-}
+export type TypeOfVerificationCodeType = (typeof TypeOfVerificationCode)[keyof typeof TypeOfVerificationCode]
